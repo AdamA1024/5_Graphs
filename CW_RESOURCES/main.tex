@@ -31,7 +31,6 @@
 \graphicspath{{./images}}
 
 \title{ELEC70103 Machine Intelligence for Finance}
-\author{Adam Ali (aa5222@ic.ac.uk, CID 02252150}
 \date{January 2026}
 
 \begin{document}
@@ -39,8 +38,7 @@
 \clearpage
 \section{Graphs in Finance - B}
 
-Markov chains are a staple of systematic trading strategies. They are a backbone within Quantitive Research for predicting future states based on what has been seen historically. Together with \textbf{Vishesh Mongia - CID X}, we model daily equity returns as belonging to one of several states. Movement from one state to another can be represented as a transition on a directed graph. For example, if a stock rises on one day, it is often followed by a fall on the next, since markets typically exhibit some mean reverting behaviour. \\
-%TODO FIX THE ABSTRACT
+Markov chains are widely used in quantitative modeling to describe systems that evolve between discrete states over time. They provide a structured way to capture how current conditions influence future outcomes based on historical patterns. Together with \textbf{Vishesh Mongia - CID X}, we model a time series as a sequence of latent states, with transitions between states represented probabilistically on a directed graph. This framework enables the analysis of temporal dynamics such as persistence and mean reversion, which are commonly observed in real-world data.
 
 This setting naturally admits a graph representation because the problem is fundamentally about transitions between states. The graph is useful because it makes temporal dependence interpretable: for example, we can visualize persistence in one state, reversal between states, and other asymmetry in price movement patterns. \\ 
 
@@ -143,7 +141,7 @@ To determine how many nodes we should use in our chain, we carry out a small hyp
 \end{figure}
 \clearpage
 \subsection{Prompt 2 - Hidden Markov Model }
-A concern was that some of the transition probabilities in figure 22 where rather noisy. For example, the most probable next move from a large upswing was a large downswing at 22.2\% of the time! This seemed counter-intuitive.\\
+A concern was that some of the transition probabilities in figure 22 were rather noisy. For example, the most probable next move from a large upswing was a large downswing at 22.2\% of the time! This seemed quite counter-intuitive, and prompted a better formulation of node states.\\
 
 \subsubsection{Prompt}
 ``Are there better ways to discretize the node states, rather than just using return percentage groupings?"
@@ -311,22 +309,10 @@ In an HMM, the latent variable $z_t \in \{1, \dots, K\}$ represents the regime a
 A \textbf{Variational Autoencoder (VAE)} generalises this framework. The encoder $q_\phi(\mathbf{z} \mid \mathbf{x})$ approximates the posterior over latent variables, while the decoder $p_\theta(\mathbf{x} \mid \mathbf{z})$ models the data generation process. Training maximises the Evidence Lower Bound (ELBO).
 
 
-
-Given a trained HMM and observed returns $(r_1, \dots, r_T)$, the \textbf{Viterbi algorithm} computes the most likely hidden state sequence:
-\[
-\hat{z}_{1:T} = \arg\max_{z_{1:T}} \; p(z_{1:T} \mid r_{1:T}).
-\]
-
-A brute-force approach requires evaluating $K^T$ paths, which is computationally infeasible. Viterbi solves this via dynamic programming:
-\[
-\delta_t(j) = \max_i \left[\delta_{t-1}(i) \cdot a_{ij}\right] \cdot b_j(r_t),
-\]
-where $a_{ij}$ are transition probabilities and $b_j(r_t)$ are emission probabilities.\\
-
 \subsubsection{Evaluation \& Future Work}
 Results showed that 9 out of 10 stocks achieved higher Sharpe ratios than buy-and-hold. The improvement was driven primarily by \textbf{volatility reduction}, as the model reduced exposure during high-volatility periods. The exception (BA) highlights a limitation: the regime signal is derived from index-level dynamics and may not capture firm-specific events.\\
 
-In practice, we probably wouldn't use the HMM directly as a trading strategy. Instead one could feed these discovered regime features ( duration, type etc.) into a larger model (XGBoost, LSTM, etc.) alongside other standard price/volume features. 
+In practice, we probably wouldn't use the HMM directly as a trading strategy. Instead one could feed these discovered regime features ( duration, type etc.) into a larger model (XGBoost, LSTM, etc.) alongside other standard price/volume features. Another feature from transformer-based models is the Mixture of Experts (MoE) layer, which could be used to route to different sub-networks based on the inferred regime, allowing for regime-specific modelling of returns.\\
 
 
 \clearpage
